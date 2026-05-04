@@ -1,0 +1,33 @@
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  { id = "check-yaml" },
+  { id = "end-of-file-fixer" },
+  { id = "trailing-whitespace"},
+  { id = "detect-private-key"},
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+  { id = "typescript-typecheck",
+    name = "TypeScript Type Check",
+    entry = "bunx tsc --noEmit --ignoreconfig",
+    language = "system",
+    pass_filenames = true,
+    files = "\\.(ts|tsx|cts|mts)$"
+  },
+  { id = "prettier",
+    name = "Prettier",
+    entry = "npx prettier --write",
+    language = "system",
+    files = "\\.(js|ts|tsx|jsx|json|css|md)$"
+  },
+  { id = "eslint",
+    name = "ESLint",
+    entry = "npx eslint --fix",
+    language = "system",
+    files = "\\.(js|ts|tsx|jsx)$"
+  },
+]
