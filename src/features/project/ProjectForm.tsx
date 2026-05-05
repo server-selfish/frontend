@@ -9,7 +9,15 @@ import {
   createProjectSchema,
   createProjectSchemaInfered,
 } from "@/schemas/project";
-const ProjectForm = () => {
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createProjectMutation } from "@/api/project/project.post.query";
+import { Dispatch, SetStateAction } from "react";
+
+const ProjectForm = ({
+  setIsOpen,
+}: {
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const name = randomName();
   const {
     register,
@@ -18,9 +26,18 @@ const ProjectForm = () => {
   } = useForm({
     resolver: zodResolver(createProjectSchema),
   });
+  const queryClient = useQueryClient();
+  const m = useMutation(createProjectMutation());
 
-  const onSubmit: SubmitHandler<createProjectSchemaInfered> = (data) => {
-    console.log("Form Submitted:", data);
+  const onSubmit: SubmitHandler<createProjectSchemaInfered> = async (data) => {
+    try {
+      await m.mutateAsync(data);
+      setIsOpen(false);
+    } catch (error: unknown) {
+      console.error(error);
+    } finally {
+      queryClient.refetchQueries({ queryKey: ["projects"] });
+    }
   };
   return (
     <form
@@ -45,9 +62,14 @@ const ProjectForm = () => {
       </div>
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline" className="font-semibold">
+            Cancel
+          </Button>
         </DialogClose>
-        <Button type="submit" className="bg-green-phthalo">
+        <Button
+          type="submit"
+          className="bg-soft-periwinkle hover:bg-soft-periwinkle-dark text-prussian-blue font-semibold"
+        >
           Add
         </Button>
       </DialogFooter>
