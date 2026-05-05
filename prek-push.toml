@@ -1,9 +1,0 @@
-[[repos]]
-repo = "local"
-hooks = [
-  { id = "typescript-typecheck",
-    name = "TypeScript Type Check",
-    entry = "bunx tsc --noEmit",
-    language = "system"
-  },
-]
