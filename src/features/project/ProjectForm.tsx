@@ -16,7 +16,7 @@ import { Dispatch, SetStateAction } from "react";
 const ProjectForm = ({
   setIsOpen,
 }: {
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const name = randomName();
   const {
@@ -32,7 +32,7 @@ const ProjectForm = ({
   const onSubmit: SubmitHandler<createProjectSchemaInfered> = async (data) => {
     try {
       await m.mutateAsync(data);
-      setIsOpen(false);
+      setIsOpen?.(false);
     } catch (error: unknown) {
       console.error(error);
     } finally {
