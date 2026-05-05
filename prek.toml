@@ -2,10 +2,18 @@
 repo = "https://github.com/pre-commit/pre-commit-hooks"
 rev = "v6.0.0"
 hooks = [
-  { id = "check-yaml" },
-  { id = "end-of-file-fixer" },
-  { id = "trailing-whitespace"},
-  { id = "detect-private-key"},
+  { id = "check-yaml",
+    stages = ['pre-commit']
+  },
+  { id = "end-of-file-fixer",
+    stages = ['pre-commit']
+  },
+  { id = "trailing-whitespace",
+    stages = ['pre-commit']
+  },
+  { id = "detect-private-key",
+    stages = ['pre-commit']
+  },
 ]
 
 [[repos]]
@@ -15,13 +23,15 @@ hooks = [
     name = "Prettier",
     entry = "bunx prettier --write",
     language = "system",
-    files = "\\.(js|ts|tsx|jsx|json|css|md)$"
+    files = "\\.(js|ts|tsx|jsx|json|css|md)$",
+    stages = ['pre-commit']
   },
   { id = "eslint",
     name = "ESLint",
     entry = "bunx eslint --fix",
     language = "system",
-    files = "\\.(js|ts|tsx|jsx)$"
+    files = "\\.(js|ts|tsx|jsx)$",
+    stages = ['pre-commit']
   },
   { id = "typescript-typecheck",
     name = "TypeScript Type Check",
