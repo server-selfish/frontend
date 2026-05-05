@@ -1,0 +1,3 @@
+export const VITE_BACKEND_BASE_URL = import.meta.env
+  .VITE_BASE_URL_BACKEND_ENDPOINT;
+export const BACKEND_BASE_URL = process.env.BASE_URL_BACKEND_ENDPOINT;
