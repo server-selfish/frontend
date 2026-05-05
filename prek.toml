@@ -13,20 +13,20 @@ repo = "local"
 hooks = [
   { id = "typescript-typecheck",
     name = "TypeScript Type Check",
-    entry = "bunx tsc --noEmit --ignoreconfig",
+    entry = "bunx tsc --noEmit --jsx react-jsx --ignoreconfig",
     language = "system",
     pass_filenames = true,
     files = "\\.(ts|tsx|cts|mts)$"
   },
   { id = "prettier",
     name = "Prettier",
-    entry = "npx prettier --write",
+    entry = "bunx prettier --write",
     language = "system",
     files = "\\.(js|ts|tsx|jsx|json|css|md)$"
   },
   { id = "eslint",
     name = "ESLint",
-    entry = "npx eslint --fix",
+    entry = "bunx eslint --fix",
     language = "system",
     files = "\\.(js|ts|tsx|jsx)$"
   },
