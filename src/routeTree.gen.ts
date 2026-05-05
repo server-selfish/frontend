@@ -8,124 +8,157 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProjectRouteRouteImport } from './routes/project/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProjectIndexRouteImport } from './routes/project/index'
-import { Route as ProjectProjectidRouteImport } from './routes/project/$projectid'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as ProtectedRouteRouteImport } from "./routes/_protected/route";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as ProtectedProjectRouteRouteImport } from "./routes/_protected/project/route";
+import { Route as ProtectedProjectIndexRouteImport } from "./routes/_protected/project/index";
+import { Route as ProtectedProjectProjectidRouteImport } from "./routes/_protected/project/$projectid";
 
-const ProjectRouteRoute = ProjectRouteRouteImport.update({
-  id: '/project',
-  path: '/project',
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: "/_protected",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectIndexRoute = ProjectIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ProjectRouteRoute,
-} as any)
-const ProjectProjectidRoute = ProjectProjectidRouteImport.update({
-  id: '/$projectid',
-  path: '/$projectid',
-  getParentRoute: () => ProjectRouteRoute,
-} as any)
+} as any);
+const ProtectedProjectRouteRoute = ProtectedProjectRouteRouteImport.update({
+  id: "/project",
+  path: "/project",
+  getParentRoute: () => ProtectedRouteRoute,
+} as any);
+const ProtectedProjectIndexRoute = ProtectedProjectIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => ProtectedProjectRouteRoute,
+} as any);
+const ProtectedProjectProjectidRoute =
+  ProtectedProjectProjectidRouteImport.update({
+    id: "/$projectid",
+    path: "/$projectid",
+    getParentRoute: () => ProtectedProjectRouteRoute,
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/project': typeof ProjectRouteRouteWithChildren
-  '/project/$projectid': typeof ProjectProjectidRoute
-  '/project/': typeof ProjectIndexRoute
+  "/": typeof IndexRoute;
+  "/project": typeof ProtectedProjectRouteRouteWithChildren;
+  "/project/$projectid": typeof ProtectedProjectProjectidRoute;
+  "/project/": typeof ProtectedProjectIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/project/$projectid': typeof ProjectProjectidRoute
-  '/project': typeof ProjectIndexRoute
+  "/": typeof IndexRoute;
+  "/project/$projectid": typeof ProtectedProjectProjectidRoute;
+  "/project": typeof ProtectedProjectIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/project': typeof ProjectRouteRouteWithChildren
-  '/project/$projectid': typeof ProjectProjectidRoute
-  '/project/': typeof ProjectIndexRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/_protected": typeof ProtectedRouteRouteWithChildren;
+  "/_protected/project": typeof ProtectedProjectRouteRouteWithChildren;
+  "/_protected/project/$projectid": typeof ProtectedProjectProjectidRoute;
+  "/_protected/project/": typeof ProtectedProjectIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/project' | '/project/$projectid' | '/project/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/project/$projectid' | '/project'
-  id: '__root__' | '/' | '/project' | '/project/$projectid' | '/project/'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/" | "/project" | "/project/$projectid" | "/project/";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/project/$projectid" | "/project";
+  id:
+    | "__root__"
+    | "/"
+    | "/_protected"
+    | "/_protected/project"
+    | "/_protected/project/$projectid"
+    | "/_protected/project/";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ProjectRouteRoute: typeof ProjectRouteRouteWithChildren
+  IndexRoute: typeof IndexRoute;
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/project': {
-      id: '/project'
-      path: '/project'
-      fullPath: '/project'
-      preLoaderRoute: typeof ProjectRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/project/': {
-      id: '/project/'
-      path: '/'
-      fullPath: '/project/'
-      preLoaderRoute: typeof ProjectIndexRouteImport
-      parentRoute: typeof ProjectRouteRoute
-    }
-    '/project/$projectid': {
-      id: '/project/$projectid'
-      path: '/$projectid'
-      fullPath: '/project/$projectid'
-      preLoaderRoute: typeof ProjectProjectidRouteImport
-      parentRoute: typeof ProjectRouteRoute
-    }
+    "/_protected": {
+      id: "/_protected";
+      path: "";
+      fullPath: "";
+      preLoaderRoute: typeof ProtectedRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_protected/project": {
+      id: "/_protected/project";
+      path: "/project";
+      fullPath: "/project";
+      preLoaderRoute: typeof ProtectedProjectRouteRouteImport;
+      parentRoute: typeof ProtectedRouteRoute;
+    };
+    "/_protected/project/": {
+      id: "/_protected/project/";
+      path: "/";
+      fullPath: "/project/";
+      preLoaderRoute: typeof ProtectedProjectIndexRouteImport;
+      parentRoute: typeof ProtectedProjectRouteRoute;
+    };
+    "/_protected/project/$projectid": {
+      id: "/_protected/project/$projectid";
+      path: "/$projectid";
+      fullPath: "/project/$projectid";
+      preLoaderRoute: typeof ProtectedProjectProjectidRouteImport;
+      parentRoute: typeof ProtectedProjectRouteRoute;
+    };
   }
 }
 
-interface ProjectRouteRouteChildren {
-  ProjectProjectidRoute: typeof ProjectProjectidRoute
-  ProjectIndexRoute: typeof ProjectIndexRoute
+interface ProtectedProjectRouteRouteChildren {
+  ProtectedProjectProjectidRoute: typeof ProtectedProjectProjectidRoute;
+  ProtectedProjectIndexRoute: typeof ProtectedProjectIndexRoute;
 }
 
-const ProjectRouteRouteChildren: ProjectRouteRouteChildren = {
-  ProjectProjectidRoute: ProjectProjectidRoute,
-  ProjectIndexRoute: ProjectIndexRoute,
+const ProtectedProjectRouteRouteChildren: ProtectedProjectRouteRouteChildren = {
+  ProtectedProjectProjectidRoute: ProtectedProjectProjectidRoute,
+  ProtectedProjectIndexRoute: ProtectedProjectIndexRoute,
+};
+
+const ProtectedProjectRouteRouteWithChildren =
+  ProtectedProjectRouteRoute._addFileChildren(
+    ProtectedProjectRouteRouteChildren
+  );
+
+interface ProtectedRouteRouteChildren {
+  ProtectedProjectRouteRoute: typeof ProtectedProjectRouteRouteWithChildren;
 }
 
-const ProjectRouteRouteWithChildren = ProjectRouteRoute._addFileChildren(
-  ProjectRouteRouteChildren,
-)
+const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedProjectRouteRoute: ProtectedProjectRouteRouteWithChildren,
+};
+
+const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
+  ProtectedRouteRouteChildren
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProjectRouteRoute: ProjectRouteRouteWithChildren,
-}
+  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx";
+import type { createStart } from "@tanstack/react-start";
+declare module "@tanstack/react-start" {
   interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
+    ssr: true;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
 }
