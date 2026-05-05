@@ -1,0 +1,18 @@
+@theme inline {
+  --color-white-primary: #fefefe;
+
+  --color-black-soft: #121212;
+
+  --color-prussian-blue: #010326;
+  --color-prussian-blue-light: #020531;
+  --color-prussian-blue-dark: #000124;
+
+  --color-soft-periwinkle: #58a0e8;
+  --color-soft-periwinkle-dark: #4687c6;
+  --color-dusty-grape: #494e6e;
+  --color-powder-metal: #f2e1d7;
+
+  --color-taupe: #8c766b;
+  --color-green-phthalo: #123524;
+  --color-green-phthalo-light-70: #628574;
+}
