@@ -1,5 +1,5 @@
 import { createRouter } from "@tanstack/react-router";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, keepPreviousData } from "@tanstack/react-query";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen.ts";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
@@ -8,7 +8,16 @@ import { NotFound } from "./components/partial/NotFound.tsx";
 
 // Create a new router instance
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 10 * 1000,
+        refetchOnWindowFocus: false,
+        placeholderData: keepPreviousData,
+        refetchIntervalInBackground: true,
+      },
+    },
+  });
   const router = createRouter({
     routeTree,
     context: { queryClient },
