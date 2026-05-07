@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-import ProjectForm from "./ProjectForm";
+import ProjectForm from "./components/form/ProjectForm";
 
 const ProjectEmpty = () => {
   return (
