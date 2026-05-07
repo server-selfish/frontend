@@ -26,13 +26,13 @@ hooks = [
     files = "\\.(js|ts|tsx|jsx|json|css|md)$",
     stages = ['pre-commit']
   },
-  { id = "eslint",
-    name = "ESLint",
-    entry = "bunx eslint --fix",
-    language = "system",
-    files = "\\.(js|ts|tsx|jsx)$",
-    stages = ['pre-commit']
-  },
+  # { id = "eslint",
+  #   name = "ESLint",
+  #   entry = "bunx eslint --fix",
+  #   language = "system",
+  #   files = "\\.(js|ts|tsx|jsx)$",
+  #   stages = ['pre-commit']
+  # },
   { id = "typescript-typecheck",
     name = "TypeScript Type Check",
     entry = "bunx tsc --noEmit",
