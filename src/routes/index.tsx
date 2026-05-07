@@ -14,14 +14,10 @@ export const Route = createFileRoute("/")({
       const params = new URLSearchParams(location.search);
 
       if (hasRefreshToken) {
-        if (!params.has("redirect")) {
-          throw redirect({
-            to: "/project",
-            search: { redirect: location.href },
-          });
-        } else {
-          throw redirect({ to: "/project" });
-        }
+        const redirectTo = params.get("redirect");
+        throw redirect({
+          to: redirectTo ?? "/project",
+        });
       }
     }
   },
