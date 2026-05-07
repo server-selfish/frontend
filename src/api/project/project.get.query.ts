@@ -1,5 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import { fetchProjectById, fetchProjects } from "./project.get.api";
+import {
+  fetchProjectById,
+  fetchProjectByName,
+  fetchProjects,
+} from "./project.get.api";
 
 export const projectsQueryOptions = () =>
   queryOptions({
@@ -7,8 +11,15 @@ export const projectsQueryOptions = () =>
     queryFn: () => fetchProjects(),
   });
 
-export const projectQueryOptions = (id: string) =>
+export const projectByIdQueryOptions = (id: string) =>
   queryOptions({
-    queryKey: ["project", id],
+    queryKey: ["project-by-id", id],
     queryFn: () => fetchProjectById({ data: id }),
+  });
+
+export const projectByNameQueryOptions = (name: string) =>
+  queryOptions({
+    queryKey: ["project-by-name", name],
+    queryFn: () => fetchProjectByName({ data: name }),
+    enabled: !!name,
   });
