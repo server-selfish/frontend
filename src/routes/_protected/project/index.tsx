@@ -7,9 +7,11 @@ import { toast } from "sonner";
 import { useEffect, useRef } from "react";
 import { Toast } from "@/components";
 import { useQuery } from "@tanstack/react-query";
+import { ProjectRouteSearchSchema } from "@/schemas/route";
 
 export const Route = createFileRoute("/_protected/project/")({
   component: RouteComponent,
+  validateSearch: ProjectRouteSearchSchema,
   loader: async ({ context }) => {
     try {
       const data = await context.queryClient.ensureQueryData(
@@ -45,7 +47,7 @@ function RouteComponent() {
 
   useEffect(() => {
     if (errorMessage && prevErrorRef.current !== errorMessage) {
-      toast(<Toast type="info" message={errorMessage} />);
+      toast(<Toast type="error" message={errorMessage} />);
       prevErrorRef.current = errorMessage;
     }
   }, [errorMessage]);
