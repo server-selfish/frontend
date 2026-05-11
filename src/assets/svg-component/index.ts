@@ -1,4 +1,11 @@
 export { default as Close } from "./Close";
+export { default as Git } from "./Git";
 export { default as Github } from "./Github";
+export { default as Go } from "./Go";
+export { default as History } from "./History";
 export { default as Hyperlink } from "./Hyperlink";
+export { default as Info } from "./Info";
+export { default as Mail } from "./Mail";
+export { default as Nodejs } from "./Nodejs";
 export { default as Plus } from "./Plus";
+export { default as Python } from "./Python";

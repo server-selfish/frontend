@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-const SvgPlus = (props: SVGProps<SVGSVGElement>) => (
+const SvgInfo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -7,11 +7,12 @@ const SvgPlus = (props: SVGProps<SVGSVGElement>) => (
     strokeLinecap="round"
     strokeLinejoin="round"
     strokeWidth={2}
-    className="plus_svg__lucide plus_svg__lucide-plus-icon plus_svg__lucide-plus"
+    className="info_svg__lucide info_svg__lucide-info-icon info_svg__lucide-info"
     viewBox="0 0 24 24"
     {...props}
   >
-    <path d="M5 12h14M12 5v14" />
+    <circle cx={12} cy={12} r={10} />
+    <path d="M12 16v-4M12 8h.01" />
   </svg>
 );
-export default SvgPlus;
+export default SvgInfo;

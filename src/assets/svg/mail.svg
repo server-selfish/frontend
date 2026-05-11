@@ -8,8 +8,8 @@
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  class="lucide lucide-plus-icon lucide-plus"
+  class="lucide lucide-mail-icon lucide-mail"
 >
-  <path d="M5 12h14" />
-  <path d="M12 5v14" />
+  <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+  <rect x="2" y="4" width="20" height="16" rx="2" />
 </svg>
