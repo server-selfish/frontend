@@ -1,9 +1,19 @@
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+@layer utilities {
+  .bg-card-gradient {
+    @apply bg-linear-to-br from-prussian-blue from-0% via-prussian-blue-dark via-15% to-soft-periwinkle;
+  }
+  .bg-card-gradient-reversed {
+    @apply bg-linear-to-r from-soft-periwinkle from-0% via-prussian-blue-dark via-80% to-prussian-blue;
+  }
+  .bg-sidebar-gradient {
+    @apply bg-linear-to-b from-prussian-blue from-20% via-prussian-blue-dark via-40% to-soft-periwinkle;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
