@@ -4,11 +4,13 @@
   --color-black-soft: #121212;
 
   --color-prussian-blue: #010326;
+  --color-prussian-blue-tsp-40: --alpha(var(--color-prussian-blue) / 40%);
   --color-prussian-blue-light: #020531;
   --color-prussian-blue-dark: #000124;
 
   --color-soft-periwinkle: #58a0e8;
   --color-soft-periwinkle-dark: #4687c6;
+  --color-soft-periwinkle-extra-dark: #18375a;
   --color-dusty-grape: #494e6e;
   --color-powder-metal: #f2e1d7;
 
