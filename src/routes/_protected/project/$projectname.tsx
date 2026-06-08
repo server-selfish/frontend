@@ -1,25 +1,40 @@
+import { projectByNameDetailQueryOptions } from "@/api";
+import { Spinner } from "@/components/ui/spinner";
+import ProjectByNameMainScreen from "@/features/project/ProjectByNameMainScreen";
+import { ProjectByNameRouteSearchSchema } from "@/schemas/route";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_protected/project/$projectname")({
-  // loader: async ({ context, params: { projectid } }) => {
+  component: RouteComponent,
+  validateSearch: ProjectByNameRouteSearchSchema,
+  // loader: async ({ context, params: { projectname } }) => {
   //   try {
-  //     const data = await context.queryClient.ensureQueryData(projectQueryOptions(projectid));
+  //     const data = await context.queryClient.ensureQueryData(
+  //       projectByNameDetailQueryOptions(projectname)
+  //     );
   //     return data;
-  //     // return { id: "1", name: "hendyck", description: "asd" } as Project;
-  //   } catch (error: any) {
-  //     return { error: error.message };
+  //   } catch (error: unknown) {
+  //     return { error: String(error) };
   //   }
   // },
-  component: RouteComponent,
 });
 
 function RouteComponent() {
-  // const project = Route.useLoaderData();
-  // if ('error' in project)
-  //   return (
-  //     <div className="w-full h-screen flex justify-center items-center">
-  //       <ErrorCard message={project.error} />
-  //     </div>
-  //   );
-  // return <ProjectByIdMainScreen project={project} />;
+  // const p = Route.useLoaderData();
+  const { projectname } = Route.useParams();
+  const { data: p, isLoading } = useQuery(
+    projectByNameDetailQueryOptions(projectname)
+  );
+  return (
+    <div className="flex flex-col py-4 px-2 min-h-0 h-full">
+      {isLoading ? (
+        <div className="w-full h-full flex justify-center items-center">
+          <Spinner className="text-white w-10 h-10" />
+        </div>
+      ) : (
+        <ProjectByNameMainScreen project={p} />
+      )}
+    </div>
+  );
 }
