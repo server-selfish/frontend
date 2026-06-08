@@ -1,20 +1,37 @@
+import {
+  keepPreviousData,
+  MutationCache,
+  QueryCache,
+  QueryClient,
+} from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
-import { QueryClient, keepPreviousData } from "@tanstack/react-query";
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen.ts";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { DefaultCatchBoundary } from "./components/partial/DefaultCatchBoundary.tsx";
 import { NotFound } from "./components/partial/NotFound.tsx";
+import { handleGlobalError } from "./lib/error.tsx";
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen.ts";
 
 // Create a new router instance
 export const getRouter = () => {
   const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (error) => {
+        handleGlobalError(error);
+      },
+    }),
+    mutationCache: new MutationCache({
+      onError: (error) => {
+        handleGlobalError(error);
+      },
+    }),
     defaultOptions: {
       queries: {
         staleTime: 10 * 1000,
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: true,
         placeholderData: keepPreviousData,
         refetchIntervalInBackground: true,
+        retry: false,
       },
     },
   });
