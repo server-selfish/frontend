@@ -6,164 +6,70 @@ import { BACKEND_BASE_URL } from "@/const/env";
 
 type RequestConfig = Options;
 
-export const createApiClient = () => {
-  const cookies = getCookies();
-  const accessToken = cookies?.selfish_access_token;
-
-  const cookieHeader = cookies
-    ? Object.entries(cookies)
-        .filter(([key]) => key !== "selfish_access_token") // exclude if you want only in Authorization
-        .map(([key, value]) => `${key}=${value}`)
-        .join("; ")
-    : undefined;
-
-  const authorizationHeader = accessToken ? `Bearer ${accessToken}` : undefined;
-
-  const headers: Record<string, string> = {};
-  if (cookieHeader) headers["Cookie"] = cookieHeader;
-  if (authorizationHeader) headers["Authorization"] = authorizationHeader;
-
-  const c = axios.create({
-    baseURL: env.BACKEND_BASE_URL,
-    withCredentials: true,
-    headers,
-  });
-
-  return {
-    get: <T>(url: string, config?: RequestConfig) =>
-      requestWithAuthRetry(
-        (cookieHeaderArg, authorizationHeaderArg) =>
-          c
-            .get<T>(url, {
-              ...config,
-              headers: {
-                ...headers,
-                ...(config?.headers || {}),
-                ...(cookieHeaderArg ? { Cookie: cookieHeaderArg } : {}),
-                ...(authorizationHeaderArg
-                  ? { Authorization: authorizationHeaderArg }
-                  : {}),
-              },
-            })
-            .then((r) => r.data),
-        cookieHeader,
-        authorizationHeader
-      ),
-
-    post: <T>(url: string, data?: unknown, config?: RequestConfig) =>
-      requestWithAuthRetry(
-        (cookieHeaderArg, authorizationHeaderArg) =>
-          c
-            .post<T>(url, data, {
-              ...config,
-              headers: {
-                ...headers,
-                ...(config?.headers || {}),
-                ...(cookieHeaderArg ? { Cookie: cookieHeaderArg } : {}),
-                ...(authorizationHeaderArg
-                  ? { Authorization: authorizationHeaderArg }
-                  : {}),
-              },
-            })
-            .then((r) => r.data),
-        cookieHeader,
-        authorizationHeader
-      ),
-
-    patch: <T>(
-      url: string,
-      data?: unknown,
-      config?: RequestConfig
-    ): Promise<T> =>
-      requestWithAuthRetry(
-        (cookieHeaderArg, authorizationHeaderArg) =>
-          c
-            .patch<T>(url, data, {
-              ...config,
-              headers: {
-                ...headers,
-                ...(config?.headers || {}),
-                ...(cookieHeaderArg ? { Cookie: cookieHeaderArg } : {}),
-                ...(authorizationHeaderArg
-                  ? { Authorization: authorizationHeaderArg }
-                  : {}),
-              },
-            })
-            .then((r: Response<T>) => r.data),
-        cookieHeader,
-        authorizationHeader
-      ),
-
-    delete: <T>(url: string, config?: RequestConfig): Promise<T> =>
-      requestWithAuthRetry(
-        (cookieHeaderArg, authorizationHeaderArg) =>
-          c
-            .delete<T>(url, {
-              ...config,
-              headers: {
-                ...headers,
-                ...(config?.headers || {}),
-                ...(cookieHeaderArg ? { Cookie: cookieHeaderArg } : {}),
-                ...(authorizationHeaderArg
-                  ? { Authorization: authorizationHeaderArg }
-                  : {}),
-              },
-            })
-            .then((r: Response<T>) => r.data),
-        cookieHeader,
-        authorizationHeader
-      ),
-  };
-};
-
+// Helper function to check for HTTP errors
 export const isHttpError = (e: unknown): e is { status?: number } => {
   return typeof e === "object" && e !== null && "status" in e;
 };
 
+// Global refresh promise
 let refreshPromise: Promise<{
   cookieHeader?: string;
-  authorizationHeader?: string;
 }> | null = null;
 
+// Build cookie header string
+const getCookieHeader = () => {
+  const cookies = getCookies();
+
+  if (!cookies) return undefined;
+
+  return Object.entries(cookies)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("; ");
+};
+
+// Cookie-only auth headers
+const getAuthHeaders = (cookieHeader?: string) => {
+  return {
+    ...(cookieHeader
+      ? { Cookie: cookieHeader }
+      : getCookieHeader()
+      ? { Cookie: getCookieHeader()! }
+      : {}),
+  };
+};
+
 const requestWithAuthRetry = async <T>(
-  requestFn: (
-    cookieHeader?: string,
-    authorizationHeader?: string
-  ) => Promise<T>,
-  cookieHeader?: string,
-  authorizationHeader?: string
+  requestFn: (cookieHeader?: string) => Promise<T>,
+  cookieHeader?: string
 ): Promise<T> => {
   try {
-    return await requestFn(cookieHeader, authorizationHeader);
+    return await requestFn(cookieHeader);
   } catch (error: unknown) {
     if (isHttpError(error) && error.status === 401) {
-      // TODO: if refresh_token is missing just throw error to logout
-
       if (refreshPromise) {
-        const {
-          cookieHeader: newCookieHeader,
-          authorizationHeader: newAuthorizationHeader,
-        } = await refreshPromise;
-        return await requestFn(newCookieHeader, newAuthorizationHeader);
+        const result = await refreshPromise;
+
+        return await requestFn(result.cookieHeader);
       }
       refreshPromise = (async () => {
         try {
-          const refreshResponse = await axios.post(
-            BACKEND_BASE_URL + "/auth/refresh",
-            undefined,
-            {
-              withCredentials: true,
-              headers: cookieHeader ? { Cookie: cookieHeader } : {},
-            }
-          );
+          const refreshUrl = BACKEND_BASE_URL + "/auth/refresh";
+          const refreshResponse = await axios.post(refreshUrl, undefined, {
+            withCredentials: true,
+            headers: getAuthHeaders(),
+          });
 
           const setCookieHeaders = refreshResponse.headers.getSetCookie?.();
-          let newCookies: Record<string, string> = {};
+
+          const currentCookies = {
+            ...(getCookies() || {}),
+          };
+
+          let newAccessToken: string | undefined;
+
           if (setCookieHeaders) {
             const parsedCookies = setCookieParser.parse(setCookieHeaders);
-            newCookies = Object.fromEntries(
-              Object.entries(parsedCookies).map(([k, v]) => [k, v.value])
-            );
+
             for (const cookie of parsedCookies) {
               setCookie(cookie.name, cookie.value, {
                 path: cookie.path,
@@ -176,47 +82,130 @@ const requestWithAuthRetry = async <T>(
                 maxAge: cookie.maxAge,
                 domain: cookie.domain,
               });
-              newCookies[cookie.name] = cookie.value;
+
+              if (cookie.name === "selfish_access_token") {
+                newAccessToken = cookie.value;
+              }
             }
           }
 
-          const newCookieHeader = Object.entries(newCookies)
+          const mergedCookies = {
+            ...currentCookies,
+          };
+
+          if (newAccessToken) {
+            mergedCookies.selfish_access_token = newAccessToken;
+          }
+
+          const newCookieHeader = Object.entries(mergedCookies)
             .map(([key, value]) => `${key}=${value}`)
             .join("; ");
 
-          const newAccessToken =
-            refreshResponse.data?.data?.AccessToken ||
-            refreshResponse.data?.data?.accessToken ||
-            newCookies["selfish_access_token"];
-
-          const newAuthorizationHeader = newAccessToken
-            ? `Bearer ${newAccessToken}`
-            : authorizationHeader;
-
           return {
             cookieHeader: newCookieHeader,
-            authorizationHeader: newAuthorizationHeader,
           };
         } catch (refreshError: unknown) {
           if (isHttpError(refreshError) && refreshError.status === 401) {
-            //TODO: logout
+            setCookie("selfish_access_token", "", {
+              path: "/",
+              expires: new Date(0),
+            });
+
+            setCookie("selfish_refresh_token", "", {
+              path: "/",
+              expires: new Date(0),
+            });
+
+            try {
+              await axios.post(BACKEND_BASE_URL + "/auth/logout", undefined, {
+                withCredentials: true,
+                headers: getAuthHeaders(),
+              });
+            } catch (logoutError) {
+              console.error("Backend logout failed:", logoutError);
+            }
             throw new Error("UNAUTHORIZED");
           }
+
           throw refreshError;
-        } finally {
-          refreshPromise = null;
         }
       })();
-      const result = await refreshPromise;
-      if (!result) {
-        throw new Error("Refresh promise unexpectedly null");
+
+      try {
+        const result = await refreshPromise;
+
+        return await requestFn(result.cookieHeader);
+      } finally {
+        refreshPromise = null;
       }
-      const {
-        cookieHeader: newCookieHeader,
-        authorizationHeader: newAuthorizationHeader,
-      } = result;
-      return await requestFn(newCookieHeader, newAuthorizationHeader);
     }
-    throw error;
+
+    return Promise.reject(error);
   }
+};
+
+// Create API client
+export const createApiClient = () => {
+  const c = axios.create({
+    baseURL: env.BACKEND_BASE_URL,
+    withCredentials: true,
+  });
+
+  return {
+    get: <T>(url: string, config?: RequestConfig) =>
+      requestWithAuthRetry((cookieHeaderArg) =>
+        c
+          .get<T>(url, {
+            ...config,
+            headers: {
+              ...(config?.headers || {}),
+              ...getAuthHeaders(cookieHeaderArg),
+            },
+          })
+          .then((r) => r.data)
+      ),
+
+    post: <T>(url: string, data?: unknown, config?: RequestConfig) =>
+      requestWithAuthRetry((cookieHeaderArg) =>
+        c
+          .post<T>(url, data, {
+            ...config,
+            headers: {
+              ...(config?.headers || {}),
+              ...getAuthHeaders(cookieHeaderArg),
+            },
+          })
+          .then((r) => r.data)
+      ),
+
+    patch: <T>(
+      url: string,
+      data?: unknown,
+      config?: RequestConfig
+    ): Promise<T> =>
+      requestWithAuthRetry((cookieHeaderArg) =>
+        c
+          .patch<T>(url, data, {
+            ...config,
+            headers: {
+              ...(config?.headers || {}),
+              ...getAuthHeaders(cookieHeaderArg),
+            },
+          })
+          .then((r: Response<T>) => r.data)
+      ),
+
+    delete: <T>(url: string, config?: RequestConfig): Promise<T> =>
+      requestWithAuthRetry((cookieHeaderArg) =>
+        c
+          .delete<T>(url, {
+            ...config,
+            headers: {
+              ...(config?.headers || {}),
+              ...getAuthHeaders(cookieHeaderArg),
+            },
+          })
+          .then((r: Response<T>) => r.data)
+      ),
+  };
 };
