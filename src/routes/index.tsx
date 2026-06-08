@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { createServerOnlyFn } from "@tanstack/react-start";
 import { getCookie } from "@tanstack/react-start/server";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Github } from "@/assets/svg-component";
 import { ButtonWithIcon } from "@/components";
 import { VITE_BACKEND_BASE_URL } from "@/const/env";
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const authURI = VITE_BACKEND_BASE_URL + "/auth/github/login";
+  const popupRef = useRef<Window | null>(null);
 
   const onClickHandler = () => {
     const dualScreenLeft =
@@ -37,6 +38,7 @@ function App() {
       : document.documentElement.clientWidth
       ? document.documentElement.clientWidth
       : screen.width;
+
     const height = window.innerHeight
       ? window.innerHeight
       : document.documentElement.clientHeight
@@ -45,21 +47,23 @@ function App() {
 
     const left = width / 2 - 600 / 2 + dualScreenLeft;
     const top = height / 2 - 750 / 2 + dualScreenTop;
-    return window.open(
+
+    // Store the window reference in the ref
+    popupRef.current = window.open(
       authURI,
-      "githubLogin",
+      "githubAppConnect",
       `width=600,height=750,top=${top},left=${left}`
     );
   };
 
   useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      if (event.data?.type === "GITHUB_AUTH_SUCCESS") {
+    const interval = setInterval(() => {
+      if (popupRef.current && popupRef.current.closed) {
         window.location.reload();
       }
-    }
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
