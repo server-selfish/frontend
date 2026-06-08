@@ -1,0 +1,1 @@
+export const GLOBAL_REFETCH_INTERVAL = 5000;
