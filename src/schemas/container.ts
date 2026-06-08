@@ -1,9 +1,9 @@
-import { z } from "zod/v3";
+import { z } from "zod/v4";
 import { makeDataSchema } from ".";
 
 export const ContainerStatusDefaultSchema = z
   .object({
-    status: z.enum([
+    container_status: z.enum([
       "created",
       "running",
       "paused",
