@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { containerStatusQueryOptions } from "@/api/container";
 import { ProjectDeploymentSummaryType } from "@/schemas/project";
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 export const ProjectDeploymentList = ({
   deployment_name,
@@ -11,10 +12,17 @@ export const ProjectDeploymentList = ({
   const containerStatusQuery = useQuery(
     containerStatusQueryOptions(container_name)
   );
+  if (containerStatusQuery.isLoading) {
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Spinner className="size-7 text-white" />;
+      </div>
+    );
+  }
   let bg = "bg-red-700 text-white";
-  switch (containerStatusQuery.data?.status) {
+  switch (containerStatusQuery.data?.container_status) {
     case "running":
-      bg = "bg-green-700";
+      bg = "bg-green-700 text-white";
       break;
     case "created":
     case "dead":

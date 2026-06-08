@@ -128,15 +128,15 @@ const ProjectDefault = ({ projects }: IProjectProps) => {
         <AddProjectCard>
           <Button
             variant={"outline"}
-            className="fixed right-6 bottom-4 w-16 h-16 bg-soft-periwinkle text-prussian-blue  border-black text-xl hover:bg-white hover:text-prussian-blue hover:border-prussian-blue rounded-full"
+            className="fixed right-6 bottom-4 w-16 h-16 bg-card-gradient text-white text-xl border-prussian-blue rounded-full"
           >
-            <Plus className="size-8" />
+            <Plus className="size-8" color="#FFFFFF" />
           </Button>
         </AddProjectCard>
       </div>
       <div
         className={cn(
-          "bg-prussian-blue-light rounded-md px-6 pt-6 py-4 duration-200 transition-all",
+          "bg-sidebar-gradient rounded-md px-6 pt-6 py-4 duration-200 transition-all",
           selectedName ? "w-[25%]" : "hidden"
         )}
       >

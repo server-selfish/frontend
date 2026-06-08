@@ -12,6 +12,8 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createProjectMutation } from "@/api/project/project.post.query";
 import { Dispatch, SetStateAction } from "react";
+import { toast } from "sonner";
+import { Toast } from "@/components";
 
 const ProjectForm = ({
   setIsOpen,
@@ -32,6 +34,7 @@ const ProjectForm = ({
   const onSubmit: SubmitHandler<createProjectSchemaInfered> = async (data) => {
     try {
       await m.mutateAsync(data);
+      toast(<Toast type={"success"} message="project created" />);
       setIsOpen?.(false);
     } catch (error: unknown) {
       console.error(error);

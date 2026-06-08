@@ -1,3 +1,5 @@
+import { useSearch } from "@tanstack/react-router";
+import { ReactNode, useMemo, useState } from "react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -7,16 +9,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ProjectForm from "../form/ProjectForm";
-import { Project } from "@/schemas/project";
-import { ReactNode, useMemo, useState } from "react";
 import { dateStringConverter } from "@/lib/date";
 import { cn } from "@/lib/utils";
-import { useSearch } from "@tanstack/react-router";
+import { Project } from "@/schemas/project";
+import ProjectForm from "../form/ProjectForm";
+
 interface IProjectCardProps {
   project: Project;
   className?: string;
 }
+
 const ProjectCard = ({ project, className }: IProjectCardProps) => {
   const searchParams = useSearch({ from: "/_protected/project/" });
   const selectedName = useMemo(() => {
@@ -26,23 +28,23 @@ const ProjectCard = ({ project, className }: IProjectCardProps) => {
   return (
     <Card
       className={cn(
-        "h-full w-full duration-150 transition-all",
+        "py-3 h-full w-full duration-150 transition-all text-white",
         selectedName === project?.name
-          ? "bg-soft-periwinkle border-soft-periwinkle"
-          : "",
+          ? "bg-card-gradient-reversed"
+          : "bg-card-gradient border-soft-periwinkle",
         className
       )}
     >
       <CardContent className="flex flex-col gap-1 h-full">
         <div className="flex flex-col justify-between h-full">
           <div className="flex flex-col">
-            <CardTitle className="warp-break-words break-all line-clamp-2">
+            <CardTitle className="warp-break-words break-all line-clamp-2 text-lg">
               {project?.name}
             </CardTitle>
             <p
               className={cn(
                 "line-clamp-3 mt-1",
-                selectedName === project?.name ? "" : "text-muted-foreground"
+                selectedName === project?.name ? "" : "text-muted"
               )}
             >
               {project?.description}
@@ -77,4 +79,4 @@ const AddProjectCard = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export { ProjectCard, AddProjectCard };
+export { AddProjectCard, ProjectCard };
