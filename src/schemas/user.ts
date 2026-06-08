@@ -1,4 +1,4 @@
-import { z } from "zod/v3";
+import { z } from "zod/v4";
 import { makeDataSchema } from ".";
 
 const UserInfoSchema = z.object({
